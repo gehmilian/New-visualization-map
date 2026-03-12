@@ -1,57 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<title>Islas Gallegas</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Islas Gallegas</title>
 
-<link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
-<script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 
-<style>
-body {
-  margin:0;
-  padding:0;
-  font-family: Arial, sans-serif;
-}
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
 
-#map {
-  position: fixed;
-  top:0;
-  bottom:0;
-  width:100%;
-}
+    #map {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
 
-#story {
-  position: relative;
-  width: 33%;
-  margin-left: 5%;
-  padding: 20px;
-  background: white;
-  z-index: 1;
-}
-</style>
+    #story {
+      position: relative;
+      z-index: 10;
+      width: 33%;
+      min-width: 300px;
+      max-width: 420px;
+      margin-left: 40px;
+      padding-top: 20px;
+    }
 
+    .story-section {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      margin-bottom: 80px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .story-section img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin: 10px 0;
+    }
+
+    .chapter {
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+
+    .chapter.active {
+      opacity: 1;
+      border-left: 4px solid #3FB1CE;
+    }
+
+    @media (max-width: 768px) {
+      #story {
+        width: calc(100% - 20px);
+        margin: 10px;
+        max-width: none;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div id="map"></div>
+  <div id="story"></div>
 
-<div id="map"></div>
-<div id="story"></div>
+  <script src="config.js"></script>
+  <script>
+    const story = document.getElementById('story');
 
-<script src="config.js"></script>
+    const header = document.createElement('div');
+    header.className = 'story-section';
+    header.innerHTML = `
+      <h1>${config.title || ''}</h1>
+      <h3>${config.subtitle || ''}</h3>
+      <p>${config.byline || ''}</p>
+    `;
+    story.appendChild(header);
 
-<script>
+    config.chapters.forEach(chapter => {
+      const section = document.createElement('div');
+      section.className = 'story-section chapter';
+      section.id = chapter.id;
 
-const map = new maplibregl.Map({
-  container: 'map',
-  style: config.style,
-  center: config.chapters[0].location.center,
-  zoom: config.chapters[0].location.zoom
-});
+      section.innerHTML = `
+        <h2>${chapter.title || ''}</h2>
+        ${chapter.image ? `<img src="${chapter.image}" alt="${chapter.title}">` : ''}
+        <p>${chapter.description || ''}</p>
+      `;
 
-map.addControl(new maplibregl.NavigationControl());
+      story.appendChild(section);
+    });
 
-</script>
+    const footer = document.createElement('div');
+    footer.className = 'story-section';
+    footer.innerHTML = `<p>${config.footer || ''}</p>`;
+    story.appendChild(footer);
 
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: config.style,
+      center: config.chapters[0].location.center,
+      zoom: config.chapters[0].location.zoom,
+      pitch: config.chapters[0].location.pitch || 0,
+      bearing: config.chapters[0].location.bearing || 0
+    });
+
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    function setActiveChapter(chapterId) {
+      const chapter = config.chapters.find(c => c.id === chapterId);
+      if (!chapter) return;
+
+      map.flyTo({
+        center: chapter.location.center,
+        zoom: chapter.location.zoom,
+        pitch: chapter.location.pitch || 0,
+        bearing: chapter.location.bearing || 0,
+        essential: true
+      });
+
+      document.querySelectorAll('.chapter').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      const activeEl = document.getElementById(chapterId);
+      if (activeEl) activeEl.classList.add('active');
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveChapter(entry.target.id);
+        }
+      });
+    }, {
+      threshold: 0.6
+    });
+
+    document.querySelectorAll('.chapter').forEach(chapter => {
+      observer.observe(chapter);
+    });
+
+    map.on('load', () => {
+      setActiveChapter(config.chapters[0].id);
+    });
+  </script>
 </body>
 </html>
