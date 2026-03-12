@@ -3,14 +3,22 @@
 <head>
 <meta charset="utf-8">
 <title>Mapa</title>
+
+<link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+<script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+
+<style>
+body { margin:0; padding:0; }
+#map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+
 </head>
 
 <body>
 
-<h1>Mapa de puntos</h1>
+<div id="map"></div>
 
-<p>Si ves esta página, GitHub Pages funciona.</p>
+<script src="config.js"></script>
 
 </body>
 </html>
-
