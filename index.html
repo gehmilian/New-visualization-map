@@ -2,14 +2,33 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Mapa</title>
+<title>Islas Gallegas</title>
 
 <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
 <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 
 <style>
-body { margin:0; padding:0; }
-#map { position:absolute; top:0; bottom:0; width:100%; }
+body {
+  margin:0;
+  padding:0;
+  font-family: Arial, sans-serif;
+}
+
+#map {
+  position: fixed;
+  top:0;
+  bottom:0;
+  width:100%;
+}
+
+#story {
+  position: relative;
+  width: 33%;
+  margin-left: 5%;
+  padding: 20px;
+  background: white;
+  z-index: 1;
+}
 </style>
 
 </head>
@@ -17,8 +36,22 @@ body { margin:0; padding:0; }
 <body>
 
 <div id="map"></div>
+<div id="story"></div>
 
 <script src="config.js"></script>
+
+<script>
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: config.style,
+  center: config.chapters[0].location.center,
+  zoom: config.chapters[0].location.zoom
+});
+
+map.addControl(new maplibregl.NavigationControl());
+
+</script>
 
 </body>
 </html>
