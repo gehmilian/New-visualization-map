@@ -1,0 +1,28 @@
+{
+  "version": 8,
+  "name": "Empty Style",
+  "metadata": {},
+  "sources": {
+    "openmaptiles": {
+      "type": "vector",
+      "url": "https://api.maptiler.com/tiles/v3-openmaptiles/tiles.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL"
+    }
+  },
+  "sprite": "",
+  "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "Fondo",
+      "type": "background",
+      "paint": {"background-color": "rgba(98, 76, 50, 1)"}
+    },
+    {
+      "id": "Agua",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {"fill-color": "rgba(125, 230, 230, 1)"}
+    }
+  ],
+  "id": "szsnjzr"
+}
